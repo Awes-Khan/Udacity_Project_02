@@ -44,14 +44,12 @@ data_transforms = [
                                        transforms.ToTensor(),
                                        transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0.224, 0.225])
                                         ]),
-
                 transforms.Compose([
                                        transforms.Resize(256),
                                        transforms.CenterCrop(224),
                                        transforms.ToTensor(),
                                        transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0.224, 0.225])
                                         ]),
-
                 transforms.Compose([
                                       transforms.Resize(256),
                                       transforms.CenterCrop(224),
@@ -121,7 +119,6 @@ def my_nn(model, trainloader, testloader, epochs, print_every, criterion, optimi
     if device == 'gpu':
         device = 'cuda'
     model.to(device)
-
     for e in range(epochs):
         running_loss = 0
         for ii, (inputs, labels) in enumerate(trainloader):
@@ -151,7 +148,7 @@ def my_nn(model, trainloader, testloader, epochs, print_every, criterion, optimi
 
 my_nn(model, dataloaders[0], dataloaders[1], epochs, 40, criterion, optimizer, device)
 
-# Done: Do validation on the test set
+
 def print_accuracy_of_my_nn(testloader, device):
     positive = 0
     total = 0
@@ -167,6 +164,8 @@ def print_accuracy_of_my_nn(testloader, device):
             positive += (predicted == labels).sum().item()
 
     print('Accuracy: %d %%' % (100 * positive / total))
+
+
 print_accuracy_of_my_nn(dataloaders[0], 'gpu')
 model.class_to_idx = image_datasets[0].class_to_idx
 model.cpu()
