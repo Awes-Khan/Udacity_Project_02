@@ -30,7 +30,7 @@ hidden_units = results.hidden_units
 epochs = results.epochs
 device = results.device
 
-data_dir = 'flowers_data'
+data_dir = 'flowers'
 train_dir = data_dir + '/train'
 valid_dir = data_dir + '/valid'
 test_dir = data_dir + '/test'
@@ -95,7 +95,7 @@ classifier = nn.Sequential(
 model.classifier = classifier
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.classifier.parameters(), lr=0.001)
+optimizer = optim.Adam(model.classifier.parameters(), lr)
 
 
 def is_valid(model, testloader, criterion, device):

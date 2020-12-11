@@ -16,7 +16,6 @@ parsers.add_argument('data_dir', action="store")
 parsers.add_argument('save_dir', action="store")
 parsers.add_argument('--top_k', dest="top_k", default=5)
 parsers.add_argument('--category_names', action="store", dest="category_names", default='cat_to_name.json')
-
 parsers.add_argument('--gpu', action="store_const", dest="device", const="gpu", default='cpu')
 
 options = parsers.parse_args()
@@ -25,6 +24,7 @@ save_dir = options.save_dir
 top_k = options.top_k
 category_names = options.category_names
 device = options.device
+path_to_image = data_dir
 
 with open(category_names, 'r') as f:
     cat_to_name = json.load(f)
@@ -46,7 +46,7 @@ model.classifier = classifier
 model.class_to_idx = checkpoint['class_to_idx']
 model.load_state_dict(checkpoint['state_dict'])
 
-path_to_image=data_dir
+
 def process_image(path_to_image):
     image = Image.open(path_to_image)
     width, height = image.size
@@ -66,6 +66,7 @@ def process_image(path_to_image):
 
 
 process_image(path_to_image)
+
 
 def imshow(image, ax=None, title=None):
     if ax is None:
@@ -91,11 +92,12 @@ def predict(image_path, model, topk=5):
     return top_pro, top_labels
 
 
-predict(path_to_image,model)
-# TODO: Display an image along with the top 5 classes
+predict(path_to_image, model)
+
+
 def display_img(image_path, model):
     image_to_be_display = process_image(image_path)
-    imshow(image_to_be_display, plt.subplot(2,1,1))
+    imshow(image_to_be_display, plt.subplot(2, 1, 1))
     probs, classes = predict(image_path, model)
     probs = probs.tolist()[0]
     classes = classes.tolist()[0]
@@ -109,4 +111,6 @@ def display_img(image_path, model):
     ax = plt.subplot(2,1,2)
     ax.barh(flower_name, probs)
     plt.show()
-display_img(path_to_image,model)
+
+
+display_img(path_to_image, model)
