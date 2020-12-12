@@ -14436,19 +14436,7 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
     <span class="n">param</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
-
-<span class="n">classifier</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">25088</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>    
-    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="p">)</span>
-
-<span class="n">model</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">classifier</span>
+<span class="n">model</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">25088</span><span class="p">,</span> <span class="n">hidden_units_count</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_units_count</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -14478,20 +14466,12 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Implement a function for the validation pass</span>
-<span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">testloader</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
     <span class="n">loss</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">accuracy</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">testloader</span><span class="p">:</span>
-        
-        <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-
-        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-        <span class="n">loss</span> <span class="o">+=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-
-        <span class="n">ps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-        <span class="n">equality</span> <span class="o">=</span> <span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">ps</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">accuracy</span> <span class="o">+=</span> <span class="n">equality</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-    
+    <span class="k">for</span> <span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">loader</span><span class="p">):</span>
+        <span class="n">loss</span> <span class="o">+=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)),</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">accuracy</span> <span class="o">+=</span> <span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)))</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">accuracy</span>
 </pre></div>
 
@@ -14503,40 +14483,22 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">my_nn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">trainloader</span><span class="p">,</span> <span class="n">testloader</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">print_every</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
-    <span class="n">epochs</span> <span class="o">=</span> <span class="n">epochs</span>
-    <span class="n">print_every</span> <span class="o">=</span> <span class="n">print_every</span>
-    <span class="n">steps</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span><span class="p">:</span>
-        <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span>
-<span class="c1">#     device=&#39;cpu&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">my_nn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">trainloader</span><span class="p">,</span> <span class="n">testloader</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span> <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span> <span class="k">else</span> <span class="s1">&#39;cpu&#39;</span>
     <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
-        <span class="n">running_loss</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trainloader</span><span class="p">):</span>
-            <span class="n">steps</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">epoch_count</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">epoch_count</span><span class="o">&lt;</span><span class="nb">int</span><span class="p">(</span><span class="n">epochs</span><span class="p">)):</span>
+        <span class="n">current_loss</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">iterator</span><span class="p">,(</span><span class="n">input_count</span><span class="p">,</span> <span class="n">label_name</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trainloader</span><span class="p">):</span>
             <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-            <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
-            <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">input_count</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)),</span> <span class="n">label_name</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
             <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
             <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-
-            <span class="n">running_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-
-            <span class="k">if</span> <span class="n">steps</span> <span class="o">%</span> <span class="n">print_every</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-            
-                <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-                    <span class="n">test_loss</span><span class="p">,</span> <span class="n">accuracy</span> <span class="o">=</span> <span class="n">is_valid</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">testloader</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span><span class="n">device</span><span class="p">)</span>
-                <span class="n">running_loss</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-<span class="n">my_nn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataloaders</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dataloaders</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="s1">&#39;gpu&#39;</span><span class="p">)</span>
+            <span class="n">current_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">my_nn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataloaders</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dataloaders</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="s1">&#39;gpu&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14550,55 +14512,29 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 <h2 id="Testing-your-network">Testing your network<a class="anchor-link" href="#Testing-your-network">&#182;</a></h2><p>It's good practice to test your trained network on test data, images the network has never seen either in training or validation. This will give you a good estimate for the model's performance on completely new images. Run the test images through the network and measure the accuracy, the same way you did validation. You should be able to reach around 70% accuracy on the test set if the model has been trained well.</p>
 
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Done: Do validation on the test set</span>
-<span class="k">def</span> <span class="nf">print_accuracy_of_my_nn</span><span class="p">(</span><span class="n">testloader</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>    
+<span class="k">def</span> <span class="nf">check_accuracy_of_my_nn</span><span class="p">(</span><span class="n">testloader</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>    
     <span class="n">positive</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">testloader</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span><span class="p">:</span>
-                <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span>
-            <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span>
-            <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-            <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">predicted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">total</span> <span class="o">+=</span> <span class="n">labels</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">positive</span> <span class="o">+=</span> <span class="p">(</span><span class="n">predicted</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-
+        <span class="k">for</span> <span class="n">iterator</span><span class="p">,(</span><span class="n">image</span><span class="p">,</span> <span class="n">label_name</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">testloader</span><span class="p">):</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span> <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span> <span class="k">else</span> <span class="s1">&#39;cpu&#39;</span>
+            <span class="n">variable</span><span class="p">,</span> <span class="n">predicted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">))</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">label_name</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">positive</span> <span class="o">+=</span> <span class="p">(</span><span class="n">predicted</span> <span class="o">==</span> <span class="n">label_name</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Accuracy: </span><span class="si">%d</span><span class="s1"> </span><span class="si">%%</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">positive</span> <span class="o">/</span> <span class="n">total</span><span class="p">))</span>
-<span class="n">print_accuracy_of_my_nn</span><span class="p">(</span><span class="n">dataloaders</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;gpu&#39;</span><span class="p">)</span>
+<span class="n">check_accuracy_of_my_nn</span><span class="p">(</span><span class="n">dataloaders</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;gpu&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
 </div>
 </div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>Accuracy: 58 %
-</pre>
-</div>
-</div>
-
-</div>
-
 </div>
 
 </div>
@@ -14612,7 +14548,7 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">class_to_idx</span> <span class="o">=</span> <span class="n">image_datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">class_to_idx</span>
@@ -14623,91 +14559,10 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 </div>
 </div>
 
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
-
-
-
-
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>VGG(
-  (features): Sequential(
-    (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (1): ReLU(inplace)
-    (2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (3): ReLU(inplace)
-    (4): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
-    (5): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (6): ReLU(inplace)
-    (7): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (8): ReLU(inplace)
-    (9): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
-    (10): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (11): ReLU(inplace)
-    (12): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (13): ReLU(inplace)
-    (14): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (15): ReLU(inplace)
-    (16): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
-    (17): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (18): ReLU(inplace)
-    (19): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (20): ReLU(inplace)
-    (21): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (22): ReLU(inplace)
-    (23): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
-    (24): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (25): ReLU(inplace)
-    (26): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (27): ReLU(inplace)
-    (28): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    (29): ReLU(inplace)
-    (30): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
-  )
-  (classifier): Sequential(
-    (0): Linear(in_features=25088, out_features=512, bias=True)
-    (1): ReLU()
-    (2): Dropout(p=0.5)
-    (3): Linear(in_features=512, out_features=256, bias=True)
-    (4): ReLU()
-    (5): Dropout(p=0.2)
-    (6): Linear(in_features=256, out_features=102, bias=True)
-    (7): LogSoftmax()
-  )
-)</pre>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Done: Save the checkpoint </span>
@@ -14728,7 +14583,7 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># TODO: Write a function that loads a checkpoint and rebuilds the model</span>
@@ -14739,10 +14594,7 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
     <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">25088</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>    
-    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="p">)</span>
 
@@ -14774,10 +14626,10 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 <p>And finally, PyTorch expects the color channel to be the first dimension but it's the third dimension in the PIL image and Numpy array. You can reorder dimensions using <a href="https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.ndarray.transpose.html"><code>ndarray.transpose</code></a>. The color channel needs to be first and retain the order of the other two dimensions.</p>
 
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">process_image</span><span class="p">(</span><span class="n">path_to_image</span><span class="p">):</span>
@@ -14786,90 +14638,14 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path_to_image</span><span class="p">)</span>
     <span class="c1"># Done: Process a PIL image for use in a PyTorch model</span>
-    <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">size</span>
-    <span class="k">if</span> <span class="n">width</span> <span class="o">&gt;</span> <span class="n">height</span><span class="p">:</span>
-        <span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">width</span><span class="o">*</span><span class="mi">256</span><span class="o">//</span><span class="n">height</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">256</span><span class="p">,</span><span class="n">height</span><span class="o">*</span><span class="mi">256</span><span class="o">//</span><span class="n">width</span><span class="p">))</span>
-    
-    <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">crop</span><span class="p">(((</span><span class="n">image</span><span class="o">.</span><span class="n">width</span><span class="o">-</span><span class="mi">224</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">height</span><span class="o">-</span><span class="mi">224</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">width</span><span class="o">-</span><span class="mi">224</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">224</span><span class="p">,</span> <span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">height</span><span class="o">-</span><span class="mi">224</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">224</span><span class="p">))</span>
-    
-    <span class="n">np_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-    <span class="n">np_image</span> <span class="o">=</span> <span class="n">np_image</span><span class="o">/</span><span class="mi">255</span>
-    <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">])</span>
-    <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span>
-    <span class="n">np_image</span> <span class="o">=</span> <span class="p">(</span><span class="n">np_image</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span><span class="o">/</span><span class="n">std</span>
-    <span class="n">np_image</span> <span class="o">=</span> <span class="n">np_image</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">np_image</span>
+    <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">image</span><span class="o">.</span><span class="n">width</span><span class="o">*</span><span class="mi">256</span><span class="o">//</span><span class="n">image</span><span class="o">.</span><span class="n">height</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span> <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">image</span><span class="o">.</span><span class="n">height</span> <span class="k">else</span> <span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">256</span><span class="p">,</span><span class="n">image</span><span class="o">.</span><span class="n">height</span><span class="o">*</span><span class="mi">256</span><span class="o">//</span><span class="n">image</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>    
+    <span class="k">return</span> <span class="p">((((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">crop</span><span class="p">(((</span><span class="n">image</span><span class="o">.</span><span class="n">width</span><span class="o">-</span><span class="mi">224</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">height</span><span class="o">-</span><span class="mi">224</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">width</span><span class="o">-</span><span class="mi">224</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">224</span><span class="p">,</span> <span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">height</span><span class="o">-</span><span class="mi">224</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">224</span><span class="p">))))</span><span class="o">/</span><span class="mi">255</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">]))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">]))</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="n">process_image</span><span class="p">(</span><span class="n">train_dir</span><span class="o">+</span><span class="s1">&#39;/18/image_04266.jpg&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
 </div>
 </div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[15]:</div>
-
-
-
-
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>array([[[-2.10077918, -2.06652967, -1.03904444, ..., -2.10077918,
-         -2.06652967, -2.06652967],
-        [-2.10077918, -0.81642264,  0.86180324, ..., -2.10077918,
-         -2.06652967, -2.06652967],
-        [-1.7582841 , -0.13143249,  1.51254388, ..., -2.10077918,
-         -2.06652967, -2.06652967],
-        ..., 
-        [ 1.20429831,  1.20429831,  1.22142307, ...,  1.68379142,
-          1.5810429 ,  1.47829437],
-        [ 1.10154979,  1.1357993 ,  1.17004881, ...,  1.54679339,
-          1.64954191,  1.64954191],
-        [ 1.10154979,  1.08442504,  1.05017553, ...,  1.40979536,
-          1.61529241,  1.63241716]],
-
-       [[-2.03571429, -2.01820728, -0.93277311, ..., -2.03571429,
-         -2.03571429, -2.03571429],
-        [-2.03571429, -0.74019608,  1.0105042 , ..., -2.03571429,
-         -2.03571429, -2.03571429],
-        [-1.70308123, -0.03991597,  1.67577031, ..., -2.03571429,
-         -2.03571429, -2.03571429],
-        ..., 
-        [ 1.48319328,  1.48319328,  1.50070028, ...,  1.93837535,
-          1.83333333,  1.72829132],
-        [ 1.37815126,  1.41316527,  1.44817927, ...,  1.79831933,
-          1.90336134,  1.90336134],
-        [ 1.37815126,  1.36064426,  1.32563025, ...,  1.65826331,
-          1.86834734,  1.88585434]],
-
-       [[-1.73472767, -1.69986928, -0.67154684, ..., -1.80444444,
-         -1.80444444, -1.80444444],
-        [-1.73472767, -0.42753813,  1.26309368, ..., -1.80444444,
-         -1.80444444, -1.80444444],
-        [-1.38614379,  0.26962963,  1.92540305, ..., -1.80444444,
-         -1.80444444, -1.80444444],
-        ..., 
-        [ 1.57681917,  1.57681917,  1.59424837, ...,  2.0822658 ,
-          1.97769063,  1.87311547],
-        [ 1.47224401,  1.5071024 ,  1.54196078, ...,  1.94283224,
-          2.04740741,  2.04740741],
-        [ 1.47224401,  1.45481481,  1.41995643, ...,  1.80339869,
-          2.01254902,  2.02997821]]])</pre>
-</div>
-
-</div>
-
-</div>
-
 </div>
 
 </div>
@@ -14881,7 +14657,7 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -14925,54 +14701,21 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 </pre></div>
 
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">topk</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Predict the class (or classes) of an image using a trained deep learning model.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    
-    <span class="c1"># TODO: Implement the code to predict the class from an image file</span>
-    <span class="n">processed_image</span> <span class="o">=</span> <span class="n">process_image</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
-    <span class="n">processed_image</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">processed_image</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span>
-    <span class="n">processed_image</span><span class="o">.</span><span class="n">unsqueeze_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">processed_image</span><span class="p">)</span>
-    <span class="n">pro</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    <span class="n">top_pro</span><span class="p">,</span> <span class="n">top_labels</span> <span class="o">=</span> <span class="n">pro</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">top_pro</span><span class="p">,</span> <span class="n">top_labels</span>
+    <span class="c1"># Done: Implement the code to predict the class from an image file</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">((</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span> <span class="n">process_image</span><span class="p">(</span><span class="n">image_path</span><span class="p">))</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">))</span><span class="o">.</span><span class="n">unsqueeze_</span><span class="p">(</span><span class="mi">0</span><span class="p">))))</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">predict</span><span class="p">(</span><span class="n">train_dir</span><span class="o">+</span><span class="s1">&#39;/18/image_04266.jpg&#39;</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 </pre></div>
 
      </div>
 </div>
 </div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[17]:</div>
-
-
-
-
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>(tensor([[ 0.3347,  0.1647,  0.1183,  0.0953,  0.0826]]),
- tensor([[ 12,  27,   7,  24,  93]]))</pre>
-</div>
-
-</div>
-
-</div>
-
 </div>
 
 </div>
@@ -14983,28 +14726,28 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
 <p>You can convert from the class integer encoding to actual flower names with the <code>cat_to_name.json</code> file (should have been loaded earlier in the notebook). To show a PyTorch tensor as an image, use the <code>imshow</code> function defined above.</p>
 
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># TODO: Display an image along with the top 5 classes</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Done: Display an image along with the top 5 classes</span>
 <span class="k">def</span> <span class="nf">display_img</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
-    <span class="n">image_to_be_display</span> <span class="o">=</span> <span class="n">process_image</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
-    <span class="n">imshow</span><span class="p">(</span><span class="n">image_to_be_display</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">name_list</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">flower</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">imshow</span><span class="p">(</span><span class="n">process_image</span><span class="p">(</span><span class="n">image_path</span><span class="p">),</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">probs</span><span class="p">,</span> <span class="n">classes</span> <span class="o">=</span> <span class="n">predict</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-    <span class="n">probs</span> <span class="o">=</span> <span class="n">probs</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">classes</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">flower</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">]</span>
-    <span class="n">flower_cat</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">classes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">flower</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">flower</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;class_to_idx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">x</span><span class="p">:</span>
-                <span class="n">flower_cat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-    <span class="n">flower_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">cat_to_name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">flower_cat</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">category_name</span><span class="p">,</span> <span class="n">category_value</span> <span class="ow">in</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;class_to_idx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">category</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">category_name</span><span class="p">)</span> <span class="k">if</span> <span class="n">category_value</span> <span class="o">==</span> <span class="n">x</span> <span class="k">else</span> <span class="k">continue</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">category</span><span class="p">:</span>
+        <span class="n">name_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cat_to_name</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">flower_name</span><span class="p">,</span> <span class="n">probs</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">name_list</span><span class="p">,</span> <span class="n">probs</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="n">display_img</span><span class="p">(</span><span class="n">train_dir</span><span class="o">+</span><span class="s1">&#39;/18/image_04266.jpg&#39;</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 </pre></div>
@@ -15012,64 +14755,6 @@ GPU Workspaces about Keeping Your Session Active. You'll want to include code fr
      </div>
 </div>
 </div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-18-5c13dabae158&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
-<span class="ansi-green-intense-fg ansi-bold">     16</span>     ax<span class="ansi-blue-fg">.</span>barh<span class="ansi-blue-fg">(</span>flower_name<span class="ansi-blue-fg">,</span> probs<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     17</span>     plt<span class="ansi-blue-fg">.</span>show<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">---&gt; 18</span><span class="ansi-red-fg"> </span>display_img<span class="ansi-blue-fg">(</span>train_dir<span class="ansi-blue-fg">+</span><span class="ansi-blue-fg">&#39;/18/image_04266.jpg&#39;</span><span class="ansi-blue-fg">,</span> model<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">&lt;ipython-input-18-5c13dabae158&gt;</span> in <span class="ansi-cyan-fg">display_img</span><span class="ansi-blue-fg">(image_path, model)</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> <span class="ansi-green-fg">def</span> display_img<span class="ansi-blue-fg">(</span>image_path<span class="ansi-blue-fg">,</span> model<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">      3</span>     image_to_be_display <span class="ansi-blue-fg">=</span> process_image<span class="ansi-blue-fg">(</span>image_path<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">----&gt; 4</span><span class="ansi-red-fg">     </span>imshow<span class="ansi-blue-fg">(</span>image_to_be_display<span class="ansi-blue-fg">,</span> plt<span class="ansi-blue-fg">.</span>subplot<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      5</span>     probs<span class="ansi-blue-fg">,</span> classes <span class="ansi-blue-fg">=</span> predict<span class="ansi-blue-fg">(</span>image_path<span class="ansi-blue-fg">,</span> model<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      6</span>     probs <span class="ansi-blue-fg">=</span> probs<span class="ansi-blue-fg">.</span>tolist<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span>
-
-<span class="ansi-green-fg">&lt;ipython-input-16-3a715a51c757&gt;</span> in <span class="ansi-cyan-fg">imshow</span><span class="ansi-blue-fg">(image, ax, title)</span>
-<span class="ansi-green-intense-fg ansi-bold">      6</span>     <span class="ansi-red-fg"># PyTorch tensors assume the color channel is the first dimension</span>
-<span class="ansi-green-intense-fg ansi-bold">      7</span>     <span class="ansi-red-fg"># but matplotlib assumes is the third dimension</span>
-<span class="ansi-green-fg">----&gt; 8</span><span class="ansi-red-fg">     </span>image <span class="ansi-blue-fg">=</span> image<span class="ansi-blue-fg">.</span>numpy<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>transpose<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      9</span> 
-<span class="ansi-green-intense-fg ansi-bold">     10</span>     <span class="ansi-red-fg"># Undo preprocessing</span>
-
-<span class="ansi-red-fg">AttributeError</span>: &#39;numpy.ndarray&#39; object has no attribute &#39;numpy&#39;</pre>
-</div>
-</div>
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-
-
-<div class="jp-RenderedImage jp-OutputArea-output ">
-<img src="data:image/png;base64,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
-"
->
-</div>
-
-</div>
-
-</div>
-
 </div>
 
 </div>
