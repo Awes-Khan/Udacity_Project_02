@@ -61,12 +61,12 @@ def imshow(image, ax=None, title=None):
 
 
 def predict(image_path):
-    # Done: Implement the code to predict the class from an image file
+
     return (torch.exp(model.forward(
         (torch.from_numpy( process_image(image_path)).type(torch.FloatTensor)).unsqueeze_(0) #Converting np array to float tensor using from_numpy
         ))).topk(5) #considering top 5 result refer from here https://pytorch.org/docs/master/torch.html#torch.topk
 
-# Done: Display an image along with the top 5 classes
+
 def display_img(image_path):
     category = [] #Empty list
     name_list=[] #Empty list
